@@ -25,6 +25,7 @@ class Cart extends StatelessWidget {
                child: CartBody(foodItems),
               ),
             ),
+            bottomNavigationBar: BottomBar(foodItems),
           );
         } else {
           return Container();
@@ -33,6 +34,197 @@ class Cart extends StatelessWidget {
     );
   }
 }
+
+class BottomBar extends StatelessWidget{
+  final List<FoodItem> foodItems;
+
+  BottomBar(this.foodItems);
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return  Container(
+      margin: EdgeInsets.only(left: 35, bottom: 25),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+           totalAmount(foodItems) ,
+          Divider(
+            height: 1,
+            color: Colors.grey[700],
+          ),
+          persons(),
+          nextButtonBar(),
+        ],
+      ),
+    );
+  }
+
+  Container nextButtonBar() {
+    return Container(
+      margin: EdgeInsets.only(right: 25),
+      padding: EdgeInsets.all(25),
+      decoration: BoxDecoration(
+          color: Color(0xfffeb324),
+          borderRadius: BorderRadius.circular(15)
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            "15-25 min",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w800
+            ),
+          ),
+          Text(
+            "Next",
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w900
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Container persons() {
+    return Container(
+      margin: EdgeInsets.only(right: 10),
+      padding: EdgeInsets.symmetric(vertical: 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text(
+            "Persons",
+            style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700
+            ),
+          ),
+          CustomPersonWidget()
+        ],
+      ),
+    );
+  }
+
+  Container totalAmount(List<FoodItem> foodItem) {
+   return Container (
+     margin: EdgeInsets.only(right: 10),
+     padding: EdgeInsets.all(25),
+     child: Row(
+       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+       children: <Widget>[
+         Text(
+           "Total",
+           style: TextStyle(
+             fontSize: 25,
+             fontWeight: FontWeight.w300
+           ),
+         ),
+         Text(
+           "\$${returnTotalAmount(foodItem)}",
+           style: TextStyle(
+             fontWeight: FontWeight.w700,
+             fontSize: 28
+           ),
+
+         )
+       ],
+     ),
+   );
+  }
+
+  String returnTotalAmount(List<FoodItem> foodItem){
+    double totalAmount = 0;
+    for (int i =0; i < foodItem.length; i ++){
+      totalAmount = totalAmount + foodItem[i].price * foodItem[i].quantity;
+    }
+    return totalAmount.toStringAsFixed(2);
+  }
+}
+
+
+class CustomPersonWidget extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _CustomPersonWidgetState();
+  }
+}
+
+class _CustomPersonWidgetState extends State<CustomPersonWidget> {
+
+  int noOfPersons = 1;
+  double buttonWidth = 30;
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+      margin: EdgeInsets.only(right: 25),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300], width: 2),
+        borderRadius: BorderRadius.circular(10)
+      ),
+      padding: EdgeInsets.symmetric(vertical: 5),
+      width: 120,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          SizedBox(
+            width: buttonWidth,
+            height: buttonWidth,
+            child: FlatButton(
+              child: Text(
+                "-",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 20,
+                ),
+              ),
+              onPressed: (){
+                setState(() {
+                  noOfPersons--;
+                });
+              },
+            ),
+          ),
+          Text(
+            noOfPersons.toString(),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 20
+            ),
+          ),
+          SizedBox(
+            width: buttonWidth,
+            height: buttonWidth,
+            child: FlatButton(
+              child: Text(
+                "+",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 20,
+                ),
+              ),
+              onPressed: (){
+                setState(() {
+                  noOfPersons++;
+                });
+
+              },
+            ),
+          ),
+        ],
+      ),
+
+    );
+  }
+}
+
 
 class CartBody extends StatelessWidget {
 
@@ -185,6 +377,7 @@ class CustomAppBar extends StatelessWidget{
   Widget build(BuildContext context) {
     // TODO: implement build
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         Padding(
           padding: EdgeInsets.all(5),
