@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:the_food_cart_app/bloc/cartListBloc.dart';
 import 'package:the_food_cart_app/model/foodItem.dart';
 
+import 'cart.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -48,12 +50,25 @@ class ItemContainer extends StatelessWidget{
   final FoodItem foodItem;
   ItemContainer({this.foodItem});
 
+  final CartListBloc bloc = BlocProvider.getBloc<CartListBloc>();
+
+  addToCart(FoodItem foodItem){
+    bloc.addToList(foodItem);
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return GestureDetector(
       onTap: () {
-        
+        addToCart(foodItem);
+
+        final snackbar = SnackBar(
+          content: Text("${foodItem.title} added to the cart"),
+          duration: Duration(milliseconds: 550),
+        );
+
+        Scaffold.of(context).showSnackBar(snackbar);
       },
       child: Items(
         hotel: foodItem.hotel, 
@@ -166,7 +181,7 @@ class Items extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: containerPadding,),
-                    
+
                   ],
                 ),
               )
@@ -289,6 +304,9 @@ Widget title(){
 }
 
 class CustomAppBar extends StatelessWidget {
+
+  final CartListBloc bloc = BlocProvider.getBloc<CartListBloc>();
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -298,21 +316,38 @@ class CustomAppBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Icon(Icons.menu),
-          Container(
-            margin: EdgeInsets.only(right: 30),
-            child: Text('0'),
-            padding: EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              color: Colors.yellow[800],
-              borderRadius: BorderRadius.circular(50),
-
-            ),
+          StreamBuilder(
+            stream: bloc.ListStream,
+            builder: (context, snapshot) {
+              List<FoodItem> foodItems = snapshot.data;
+              int lenght = foodItems != null ? foodItems.length : 0;
+              return buildGestureDetector(lenght, context, foodItems);
+            },
           )
         ],
       ),
     );
   }
 }
+
+GestureDetector buildGestureDetector(int length, BuildContext context ,List<FoodItem> foodItems) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Cart())
+      );
+    },
+    child:  Container(
+      margin: EdgeInsets.only(right: 30),
+      child: Text(length.toString()),
+      padding: EdgeInsets.all(15),
+      decoration: BoxDecoration(
+          color: Colors.yellow[800], borderRadius: BorderRadius.circular(50)),
+    ),
+  );
+}
+
 
 class CategoryListItem extends StatelessWidget {
 
